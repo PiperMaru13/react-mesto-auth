@@ -29,22 +29,22 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentEmail = localStorage.getItem("email");
+    currentEmail ? setUserEmail(currentEmail) : setUserEmail("");
+    if (isLoggedIn) {
+      Promise.all([api.getProfileInfo(), api.getCards()]).then(([getProfileInfo, cardData]) => {
+        setCurrentUser(getProfileInfo);
+        setCards(cardData);
+      }).catch(err => console.log(err));
+    }
+}, [isLoggedIn]);
+
+  useEffect(() => {
     handleCheckToken();
-    api
-      .getProfileInfo()
-      .then((res) => {
-        setCurrentUser(res);
-      })
-      .catch((err) => console.log(err));
-    api
-      .getCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch((err) => console.log(err));
   }, []);
 
   function handleCheckToken() {
@@ -92,6 +92,8 @@ function App() {
   function handleLogout() {
     setLoggedIn(false);
     localStorage.removeItem("jwt");
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
     navigate("/sign-in", { replace: true });
   }
 
@@ -184,7 +186,7 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header onLogout={handleLogout} />
+        <Header onLogout={handleLogout} currentEmail={userEmail} />
         <Routes>
           <Route
             path="/"

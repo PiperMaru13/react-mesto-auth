@@ -1,15 +1,9 @@
 import React from "react";
 import logo from "../images/logo.svg";
 import { Link, useLocation } from "react-router-dom";
-import { useEffect } from "react";
 
-export default function Header({ onLogout }) {
-  const [userEmail, setUserEmail] = React.useState("");
+export default function Header({ onLogout , currentEmail}) {
   const location = useLocation();
-
-  useEffect(() => {
-    setUserEmail(localStorage.getItem("email"));
-  }, []);
 
   return (
     <header className="header">
@@ -26,7 +20,7 @@ export default function Header({ onLogout }) {
       )}
       {location.pathname === "/" && (
         <nav className="header__navigation">
-          <p className="header__email">{userEmail}</p>{" "}
+          <p className="header__email">{currentEmail}</p>{" "}
           <button className="header__button-logout" onClick={onLogout}>
             Выйти
           </button>
